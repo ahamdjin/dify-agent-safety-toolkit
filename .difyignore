@@ -1,0 +1,17 @@
+.git/
+.github/
+.env
+.env.*
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+tests/
+dist/
+build/
+*.difypkg
+.DS_Store

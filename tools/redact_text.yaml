@@ -1,0 +1,37 @@
+identity:
+  name: redact_text
+  author: ahamdjin
+  label:
+    en_US: Redact Sensitive Text
+description:
+  human:
+    en_US: Mask common emails, phone numbers, IP addresses, card candidates and known secret patterns before an LLM step. Detection is incomplete.
+  llm: Use before sending free-form text into model context when common personal details or API tokens should be masked. Does not guarantee all sensitive data is removed.
+parameters:
+  - name: text
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Text
+    human_description:
+      en_US: Text to process locally (max 120000 characters). It can contain sensitive information.
+    llm_description: Text to mask before using it in the next agent or LLM step.
+output_schema:
+  type: object
+  properties:
+    text:
+      type: string
+      description: Pattern-redacted text; this is the output to send onward.
+    changed:
+      type: boolean
+    redaction_counts:
+      type: object
+      description: Per-category match counts only. No matched values.
+  required:
+    - text
+    - changed
+    - redaction_counts
+extra:
+  python:
+    source: tools/redact_text.py

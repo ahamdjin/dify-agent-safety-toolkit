@@ -1,0 +1,18 @@
+identity:
+  author: ahamdjin
+  name: agent_safety_toolkit
+  label:
+    en_US: Agent Safety Toolkit
+  description:
+    en_US: Local text redaction and bounded JSON context preparation. No API key or third-party data transfer.
+  icon: icon.svg
+  tags:
+    - utilities
+    - productivity
+credentials_for_provider: {}
+tools:
+  - tools/redact_text.yaml
+  - tools/compact_json.yaml
+extra:
+  python:
+    source: provider/agent_safety_toolkit.py

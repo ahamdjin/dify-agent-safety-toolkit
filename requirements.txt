@@ -1,0 +1,2 @@
+dify_plugin>=0.10.2,<1
+ahmad-yar-gpt-tools==0.3.1
