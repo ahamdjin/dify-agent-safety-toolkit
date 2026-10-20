@@ -53,6 +53,16 @@ class PluginContractTests(unittest.TestCase):
             read_yaml("provider/agent_safety_toolkit.yaml")
         )
         self.assertEqual(len(provider.tools), 2)
+        prepare = read_yaml("tools/compact_json.yaml")
+        parameters = {p["name"] for p in prepare["parameters"]}
+        self.assertTrue({
+            "allowed_paths", "required_paths", "additional_secret_keys",
+            "mask_literals", "block_on_truncation"
+        }.issubset(parameters))
+        self.assertTrue({
+            "policy_status", "policy_reasons", "may_auto_continue",
+            "fields_excluded", "missing_required_paths"
+        }.issubset(prepare["output_schema"]["properties"]))
         self.assertEqual(
             [tool.identity.name for tool in provider.tools],
             ["redact_text", "compact_json"],
