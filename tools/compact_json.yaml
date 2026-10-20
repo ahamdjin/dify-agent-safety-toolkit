@@ -6,7 +6,7 @@ identity:
 description:
   human:
     en_US: Forward only approved JSON fields, mask common or configured values, enforce required fields, and return a pass/review/block result before an AI step. Optional compaction is lossy.
-  llm: Use to reduce large JSON tool responses before sending them to a model. Masks common secret and personal-data patterns, but this is not complete DLP. Preserve the original separately if needed.
+  llm: Prepare a serialized JSON payload for model context by selecting allowed fields, masking recognizable secrets, truncating excess data, and checking explicit required-field rules. Route on policy_status; this is not complete DLP.
 parameters:
   - name: json_text
     type: string
