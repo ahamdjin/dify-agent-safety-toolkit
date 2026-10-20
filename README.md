@@ -77,6 +77,8 @@ If you do not set an allowlist, the tool returns **`review`**, not `pass`. If a 
 - **Max depth**: 1–16, default **8** (nested structures beyond the cap become a marker).
 - **Block if truncated**: default **false**. When enabled, any string/list/depth cutoff returns status `block` and **no `json_text`**.
 
+The plugin emits **both a JSON result and named Dify output variables** for direct use in IF/ELSE and downstream nodes. If the named outputs do not appear after updating a local package, remove and re-add the Tool node to refresh its output schema.
+
 **Returned fields** are `json_text` (serialized JSON or empty on block), `policy_status` (`pass` / `review` / `block`), `policy_reasons`, `missing_required_paths`, `may_auto_continue`, `fields_excluded`, `input_characters`, `output_characters`, `characters_removed`, `redaction_counts`, `compaction` and `changed`.
 
 Metrics represent **JSON field and character counts**, *not LLM token savings or cost reductions*. Some transformations can increase output length. The `characters_removed` count is floored at zero; use input/output counts for the exact difference.
