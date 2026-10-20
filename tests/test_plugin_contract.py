@@ -77,7 +77,13 @@ class PluginContractTests(unittest.TestCase):
         text_tool = RedactTextTool.__new__(RedactTextTool)
         text_tool.response_type = ToolInvokeMessage  # normally injected by Dify
         text_messages = list(text_tool._invoke({"text": raw}))
-        self.assertEqual(len(text_messages), 1)
+        self.assertGreater(len(text_messages), 1)
+        text_vars = {
+            m.message.variable_name: m.message.variable_value
+            for m in text_messages if m.type.value == "variable"
+        }
+        self.assertEqual(text_vars["text"], "Contact [EMAIL_1] about the case")
+        self.assertTrue(text_vars["changed"])
         self.assertNotIn("alice@example.com", text_messages[0].model_dump_json())
         self.assertIn("[EMAIL_1]", text_messages[0].model_dump_json())
 
@@ -86,7 +92,17 @@ class PluginContractTests(unittest.TestCase):
         json_messages = list(json_tool._invoke({
             "json_text": '{"apiKey":"private-value","email":"alice@example.com"}',
         }))
-        self.assertEqual(len(json_messages), 1)
+        self.assertGreater(len(json_messages), 1)
+        variables = {
+            m.message.variable_name: m.message.variable_value
+            for m in json_messages if m.type.value == "variable"
+        }
+        self.assertEqual(variables["policy_status"], "review")
+        self.assertFalse(variables["may_auto_continue"])
+        self.assertIn("[REDACTED]", variables["json_text"])
+        self.assertTrue(all(key in variables for key in (
+            "json_text", "policy_reasons", "fields_excluded", "redaction_counts",
+        )))
         self.assertNotIn("private-value", json_messages[0].model_dump_json())
         self.assertNotIn("alice@example.com", json_messages[0].model_dump_json())
 
