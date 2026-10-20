@@ -78,7 +78,7 @@ parameters:
     label:
       en_US: Extra secret field names
     human_description:
-      en_US: One JSON key name per line, such as internalCredential. Matching field values are masked at every depth.
+      en_US: Comma/newline separated JSON key names, such as internalCredential. Matching field values are masked at every depth.
     llm_description: Extra sensitive JSON keys to mask in addition to built-in names.
   - name: mask_literals
     type: string
