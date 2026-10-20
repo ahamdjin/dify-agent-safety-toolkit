@@ -52,15 +52,15 @@ jobs:
           chmod +x /tmp/dify-plugin
       - name: Build installable package
         run: |
-          /tmp/dify-plugin plugin package . -o agent_safety_toolkit-0.0.1.difypkg
-          test -s agent_safety_toolkit-0.0.1.difypkg
-          sha256sum agent_safety_toolkit-0.0.1.difypkg
+          /tmp/dify-plugin plugin package . -o agent_safety_toolkit-0.1.0.difypkg
+          test -s agent_safety_toolkit-0.1.0.difypkg
+          sha256sum agent_safety_toolkit-0.1.0.difypkg
       - name: Verify installer excludes development files and secrets
         run: |
           python - <<'PY'
           import pathlib
           import zipfile
-          archive = pathlib.Path("agent_safety_toolkit-0.0.1.difypkg")
+          archive = pathlib.Path("agent_safety_toolkit-0.1.0.difypkg")
           with zipfile.ZipFile(archive) as package:
               paths = [name.lstrip("./") for name in package.namelist()]
           required = {
@@ -85,6 +85,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: agent-safety-toolkit-dify-package
-          path: agent_safety_toolkit-0.0.1.difypkg
+          path: agent_safety_toolkit-0.1.0.difypkg
           if-no-files-found: error
           retention-days: 30
