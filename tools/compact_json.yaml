@@ -105,6 +105,29 @@ output_schema:
     json_text:
       type: string
       description: Serialized compacted JSON to send to the next workflow or LLM node.
+    policy_status:
+      type: string
+      description: Deterministic pass, review or block. Pass does not certify that data is safe.
+      enum: [pass, review, block]
+    policy_reasons:
+      type: array
+      items:
+        type: string
+      description: Machine-readable reasons for review or block, never raw input values.
+    missing_required_paths:
+      type: array
+      items:
+        type: string
+      description: Configured required paths absent from the prepared result.
+    may_auto_continue:
+      type: boolean
+      description: True only when status is pass. Workflow must explicitly branch on it.
+    fields_excluded:
+      type: integer
+      description: Number of JSON keys excluded by explicit allowlist projection.
+    characters_removed:
+      type: integer
+      description: Max(0, raw input characters minus returned JSON characters), not token savings.
     changed:
       type: boolean
     input_characters:
