@@ -6,7 +6,7 @@
 - **Plugin name**: agent_safety_toolkit (Agent Safety Toolkit)
 - **Version**: 0.1.0
 - **Source repository**: https://github.com/ahamdjin/dify-agent-safety-toolkit
-- **Contact**: https://www.ahmadyar.co/connect 
+- **Contact**: https://www.ahmadyar.co/connect
 
 ## Submission type
 
@@ -28,7 +28,7 @@ Reusable local JSON allowlisting, required-field validation, bounded compaction,
 ## Required checks
 
 - [ ] I have read and followed the [Marketplace submission requirements](https://github.com/langgenius/dify-plugins/blob/main/docs/plugin-submission-requirements.md).
-- [ ] I have read and comply with the Plugin Developer Agreement.
+- [x] I have read and comply with the Plugin Developer Agreement.
 - [ ] I tested this plugin on Dify Community Edition and Dify Cloud, or documented any limitation below.
 - [x] The package contains only files needed at runtime.
 - [x] The package does not contain secrets, local credentials, `.env` files, `.git` directories, virtual environments, caches, logs, or IDE files.
@@ -39,11 +39,7 @@ Reusable local JSON allowlisting, required-field validation, bounded compaction,
 
 ## Security and privacy notes
 
-<!--
-List any sensitive capability, such as command execution, code execution, SQL, SSH/SFTP,
-browser automation, file operations, arbitrary URL fetching, proxying, or handling health,
-financial, biometric, children, or other sensitive data. Write "None" if not applicable.
--->
+Inputs can include personal, financial, and authentication information, so High risk is selected. Transformations run in memory with no runtime network calls, filesystem operations, code execution, telemetry, or maintainer storage. No provider credentials or plugin permissions are required. Input sizes and configuration are bounded. Pattern masking is best effort; a pass outcome is not a security guarantee. Dify traces and upstream/downstream retention remain outside the plugin boundary.
 
 ## Local validation
 
@@ -57,6 +53,6 @@ Dify Cloud installation and discovery of both actions confirmed. Cloud workflow 
 
 <!-- Optional: migration notes, known limitations, binary/package exceptions, or breaking changes. -->
 
-Draft pending publisher agreement confirmation and live workflow execution. No agreement acceptance has been made.
+The publisher confirmed agreement acceptance on 2026-10-20. This PR remains a draft pending live workflow execution validation.
 
 Sensitive data may include financial and authentication information. Processing is in memory, without runtime network calls, telemetry, or plugin storage. Dify and downstream retention are outside this plugin. Pattern masking is incomplete; pass is not safety certification.
