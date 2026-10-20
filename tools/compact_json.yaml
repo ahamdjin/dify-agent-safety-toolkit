@@ -60,7 +60,7 @@ parameters:
     label:
       en_US: Allowed paths (one per line)
     human_description:
-      en_US: Only forward these dot-separated JSON paths. Example lead.id or activities[].type. Leave blank to retain the full JSON and mark it for review.
+      en_US: Only forward these dot-separated JSON paths, comma or newline separated. Example lead.id or activities[].type. Blank means keep all JSON and require review.
     llm_description: Newline-separated allowlist of JSON field paths. Arrays use [].
   - name: required_paths
     type: string
