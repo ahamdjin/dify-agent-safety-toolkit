@@ -4,7 +4,7 @@ identity:
   label:
     en_US: Agent Safety Toolkit
   description:
-    en_US: Local text redaction and bounded JSON context preparation. No API key or third-party data transfer.
+    en_US: Local text redaction and allowlisted JSON context preparation with required-field and truncation gates. No API key or external runtime calls.
   icon: icon.svg
   tags:
     - utilities
