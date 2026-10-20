@@ -57,7 +57,7 @@ The output has `policy_status: "pass"`, `may_auto_continue: true` and counts of 
 2. Bind the node's response to `json_text`. If Dify supplies an object, JSON-serialize it first (using an appropriate previous node).
 3. Use the configuration above. Save and execute with fictional test data.
 4. Add a **Dify IF/ELSE** node immediately after **Prepare Agent JSON**.
-5. Route **`may_auto_continue == true`** to the next LLM node, using the plugin's **`json_text` output**, never the original HTTP response.
+5. In the Dify IF/ELSE node, select the named **Prepare Agent JSON → `may_auto_continue`** output variable and test **equals true**. Route that branch to the LLM using the tool's named **`json_text`** output—never the original HTTP response.
 6. Route all other outcomes to your own review/manual handling route; for `block`, the plugin deliberately returns an **empty `json_text`**.
 7. Inspect `policy_reasons` and `missing_required_paths` when debugging, not the raw input.
 
