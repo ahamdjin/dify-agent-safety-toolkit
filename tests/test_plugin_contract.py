@@ -106,6 +106,27 @@ class PluginContractTests(unittest.TestCase):
         self.assertNotIn("private-value", json_messages[0].model_dump_json())
         self.assertNotIn("alice@example.com", json_messages[0].model_dump_json())
 
+    def test_blocked_dify_tool_returns_no_context_variable(self):
+        from tools.compact_json import CompactJsonTool
+        from dify_plugin.entities.tool import ToolInvokeMessage
+
+        tool = CompactJsonTool.__new__(CompactJsonTool)
+        tool.response_type = ToolInvokeMessage
+        messages = list(tool._invoke({
+            "json_text": '{"lead":{"company":"Example Services"}}',
+            "allowed_paths": "lead.id",
+            "required_paths": "lead.id",
+        }))
+        variables = {
+            m.message.variable_name: m.message.variable_value
+            for m in messages if m.type.value == "variable"
+        }
+        self.assertEqual(variables["policy_status"], "block")
+        self.assertFalse(variables["may_auto_continue"])
+        self.assertEqual(variables["json_text"], "")
+        self.assertEqual(variables["missing_required_paths"], ["lead.id"])
+        self.assertTrue(all("Example Services" not in m.model_dump_json() for m in messages))
+
     def test_sdk_adapter_modules_import(self):
         for module in ("main", "provider.agent_safety_toolkit", "tools.redact_text", "tools.compact_json"):
             with self.subTest(module=module):
