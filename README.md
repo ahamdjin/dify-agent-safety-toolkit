@@ -120,7 +120,7 @@ CI uses Dify's official CLI to package the `.difypkg`, checks its required runti
 
 ## Evidence, not marketing
 
-[`benchmarks/measure.py`](benchmarks/measure.py) runs three **fictional, reproducible** workloads: CRM routing, support ticket triage, and webhook normalization. It verifies preserved required fields and records before/after JSON character size and excluded keys. This is compared against unfiltered JSON, **not against an optimized Dify Code node**; no accuracy, production latency, model-token, or dollar-savings claims are made.
+[`benchmarks/measure.py`](benchmarks/measure.py) and [the measured examples](docs/measurements.md) runs three **fictional, reproducible** workloads: CRM routing, support ticket triage, and webhook normalization. It verifies preserved required fields and records before/after JSON character size and excluded keys. This is compared against unfiltered JSON, **not against an optimized Dify Code node**; no accuracy, production latency, model-token, or dollar-savings claims are made.
 
 Our [automated tests](tests/) cover allowlist projection, required-field preservation, masking, blocked-result fail-closed behavior, array truncation, excessive depth, malformed JSON, invalid settings and Dify SDK output messages.
 
