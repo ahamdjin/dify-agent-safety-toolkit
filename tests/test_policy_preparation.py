@@ -42,6 +42,27 @@ class FieldProjectionTests(unittest.TestCase):
         self.assertNotIn("PRIVATE", result["json_text"])
         self.assertLess(result["output_characters"], result["input_characters"])
 
+    def test_empty_nested_projection_blocks_instead_of_passing(self):
+        result = run(
+            {"lead": {"unapproved": "private"}},
+            allowed_paths="lead.id",
+        )
+        self.assertEqual(result["policy_status"], "block")
+        self.assertEqual(result["json_text"], "")
+        self.assertIn("no_selected_fields", result["policy_reasons"])
+
+    def test_required_string_truncation_blocks_even_if_relaxed(self):
+        result = run(
+            {"lead": {"id": "L" * 200}},
+            allowed_paths="lead.id",
+            required_paths="lead.id",
+            max_string=100,
+            block_on_truncation=False,
+        )
+        self.assertEqual(result["policy_status"], "block")
+        self.assertEqual(result["json_text"], "")
+        self.assertEqual(result["missing_required_paths"], ["lead.id"])
+
     def test_required_missing_blocks_with_empty_payload(self):
         result = run(
             {"lead": {"name": "Customer"}},
