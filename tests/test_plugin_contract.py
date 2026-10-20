@@ -60,15 +60,18 @@ class PluginContractTests(unittest.TestCase):
     def test_real_sdk_messages_do_not_echo_redacted_values(self):
         from tools.redact_text import RedactTextTool
         from tools.compact_json import CompactJsonTool
+        from dify_plugin.entities.tool import ToolInvokeMessage
 
         raw = "Contact alice@example.com about the case"
         text_tool = RedactTextTool.__new__(RedactTextTool)
+        text_tool.response_type = ToolInvokeMessage  # normally injected by Dify
         text_messages = list(text_tool._invoke({"text": raw}))
         self.assertEqual(len(text_messages), 1)
         self.assertNotIn("alice@example.com", text_messages[0].model_dump_json())
         self.assertIn("[EMAIL_1]", text_messages[0].model_dump_json())
 
         json_tool = CompactJsonTool.__new__(CompactJsonTool)
+        json_tool.response_type = ToolInvokeMessage  # normally injected by Dify
         json_messages = list(json_tool._invoke({
             "json_text": '{"apiKey":"private-value","email":"alice@example.com"}',
         }))
