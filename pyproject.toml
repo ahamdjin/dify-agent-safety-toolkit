@@ -1,6 +1,6 @@
 [project]
 name = "dify-agent-safety-toolkit"
-version = "0.0.1"
+version = "0.1.0"
 description = "Bounded local redaction and JSON preparation tools for Dify agent workflows"
 readme = "README.md"
 requires-python = ">=3.12"

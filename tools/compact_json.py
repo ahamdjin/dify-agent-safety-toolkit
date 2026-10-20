@@ -10,11 +10,19 @@ from agent_safety import prepare_agent_json
 
 class CompactJsonTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage, None, None]:
-        yield self.create_json_message(
-            prepare_agent_json(
-                tool_parameters.get("json_text"),
-                max_string=tool_parameters.get("max_string", 1000),
-                max_items=tool_parameters.get("max_items", 25),
-                max_depth=tool_parameters.get("max_depth", 8),
-            )
+        result = prepare_agent_json(
+            tool_parameters.get("json_text"),
+            max_string=tool_parameters.get("max_string", 1000),
+            max_items=tool_parameters.get("max_items", 25),
+            max_depth=tool_parameters.get("max_depth", 8),
+            allowed_paths=tool_parameters.get("allowed_paths"),
+            required_paths=tool_parameters.get("required_paths"),
+            additional_secret_keys=tool_parameters.get("additional_secret_keys"),
+            mask_literals=tool_parameters.get("mask_literals"),
+            block_on_truncation=tool_parameters.get("block_on_truncation", False),
         )
+        # JSON is useful for agent calls; named variables are required for
+        # directly wiring Dify Workflow IF/ELSE and next-node input fields.
+        yield self.create_json_message(result)
+        for name, value in result.items():
+            yield self.create_variable_message(name, value)

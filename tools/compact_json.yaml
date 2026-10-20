@@ -5,8 +5,8 @@ identity:
     en_US: Prepare Agent JSON
 description:
   human:
-    en_US: Mask common secret fields and sensitive text values, remove nulls, and cap list/string/depth sizes in API JSON before an agent step. Output is lossy.
-  llm: Use to reduce large JSON tool responses before sending them to a model. Masks common secret and personal-data patterns, but this is not complete DLP. Preserve the original separately if needed.
+    en_US: Forward only approved JSON fields, mask common or configured values, enforce required fields, and return a pass/review/block result before an AI step. Optional compaction is lossy.
+  llm: Prepare a serialized JSON payload for model context by selecting allowed fields, masking recognizable secrets, truncating excess data, and checking explicit required-field rules. Route on policy_status; this is not complete DLP.
 parameters:
   - name: json_text
     type: string
@@ -53,12 +53,81 @@ parameters:
     human_description:
       en_US: Truncate nested objects/arrays at this depth (1-16); default 8.
     llm_description: Maximum retained nesting.
+  - name: allowed_paths
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Allowed paths (one per line)
+    human_description:
+      en_US: Only forward these dot-separated JSON paths, comma or newline separated. Example lead.id or activities[].type. Blank means keep all JSON and require review.
+    llm_description: Newline-separated allowlist of JSON field paths. Arrays use [].
+  - name: required_paths
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Required paths (one per line)
+    human_description:
+      en_US: Comma/newline separated paths. Block if missing, null, empty, masked, or truncated. Must be covered by the allowlist.
+    llm_description: Paths that must survive preparation.
+  - name: additional_secret_keys
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Extra secret field names
+    human_description:
+      en_US: Comma/newline separated JSON key names, such as internalCredential. Matching field values are masked at every depth.
+    llm_description: Extra sensitive JSON keys to mask in addition to built-in names.
+  - name: mask_literals
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Extra literal values to mask
+    human_description:
+      en_US: One exact literal per line, 4-128 characters. Case-sensitive replacements. Avoid storing real API keys here as Dify may log configuration.
+    llm_description: Specific literal strings to mask in selected JSON values.
+  - name: block_on_truncation
+    type: boolean
+    required: false
+    form: form
+    default: false
+    label:
+      en_US: Block if content is truncated
+    human_description:
+      en_US: Return no JSON payload if a string, list, or nested object is cut by compaction limits.
+    llm_description: Reject lossy results entirely when true.
 output_schema:
   type: object
   properties:
     json_text:
       type: string
       description: Serialized compacted JSON to send to the next workflow or LLM node.
+    policy_status:
+      type: string
+      description: Deterministic pass, review or block. Pass does not certify that data is safe.
+      enum: [pass, review, block]
+    policy_reasons:
+      type: array
+      items:
+        type: string
+      description: Machine-readable reasons for review or block, never raw input values.
+    missing_required_paths:
+      type: array
+      items:
+        type: string
+      description: Configured required paths absent from the prepared result.
+    may_auto_continue:
+      type: boolean
+      description: True only when status is pass. Workflow must explicitly branch on it.
+    fields_excluded:
+      type: integer
+      description: Number of JSON keys excluded by explicit allowlist projection.
+    characters_removed:
+      type: integer
+      description: Max(0, raw input characters minus returned JSON characters), not token savings.
     changed:
       type: boolean
     input_characters:
@@ -73,6 +142,12 @@ output_schema:
       description: Number of truncated values, removed nulls and masked fields.
   required:
     - json_text
+    - policy_status
+    - policy_reasons
+    - missing_required_paths
+    - may_auto_continue
+    - fields_excluded
+    - characters_removed
     - changed
     - input_characters
     - output_characters

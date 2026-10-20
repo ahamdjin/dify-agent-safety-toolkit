@@ -16,6 +16,7 @@ class PluginContractTests(unittest.TestCase):
     def test_manifest_metadata_and_permissions(self):
         manifest = read_yaml("manifest.yaml")
         self.assertEqual(manifest["type"], "plugin")
+        self.assertEqual(manifest["version"], "0.1.0")
         self.assertEqual(manifest["author"], "ahamdjin")
         self.assertEqual(manifest["name"], "agent_safety_toolkit")
         self.assertEqual(manifest["privacy"], "PRIVACY.md")
@@ -52,6 +53,16 @@ class PluginContractTests(unittest.TestCase):
             read_yaml("provider/agent_safety_toolkit.yaml")
         )
         self.assertEqual(len(provider.tools), 2)
+        prepare = read_yaml("tools/compact_json.yaml")
+        parameters = {p["name"] for p in prepare["parameters"]}
+        self.assertTrue({
+            "allowed_paths", "required_paths", "additional_secret_keys",
+            "mask_literals", "block_on_truncation"
+        }.issubset(parameters))
+        self.assertTrue({
+            "policy_status", "policy_reasons", "may_auto_continue",
+            "fields_excluded", "missing_required_paths"
+        }.issubset(prepare["output_schema"]["properties"]))
         self.assertEqual(
             [tool.identity.name for tool in provider.tools],
             ["redact_text", "compact_json"],
@@ -66,7 +77,13 @@ class PluginContractTests(unittest.TestCase):
         text_tool = RedactTextTool.__new__(RedactTextTool)
         text_tool.response_type = ToolInvokeMessage  # normally injected by Dify
         text_messages = list(text_tool._invoke({"text": raw}))
-        self.assertEqual(len(text_messages), 1)
+        self.assertGreater(len(text_messages), 1)
+        text_vars = {
+            m.message.variable_name: m.message.variable_value
+            for m in text_messages if m.type.value == "variable"
+        }
+        self.assertEqual(text_vars["text"], "Contact [EMAIL_1] about the case")
+        self.assertTrue(text_vars["changed"])
         self.assertNotIn("alice@example.com", text_messages[0].model_dump_json())
         self.assertIn("[EMAIL_1]", text_messages[0].model_dump_json())
 
@@ -75,9 +92,40 @@ class PluginContractTests(unittest.TestCase):
         json_messages = list(json_tool._invoke({
             "json_text": '{"apiKey":"private-value","email":"alice@example.com"}',
         }))
-        self.assertEqual(len(json_messages), 1)
+        self.assertGreater(len(json_messages), 1)
+        variables = {
+            m.message.variable_name: m.message.variable_value
+            for m in json_messages if m.type.value == "variable"
+        }
+        self.assertEqual(variables["policy_status"], "review")
+        self.assertFalse(variables["may_auto_continue"])
+        self.assertIn("[REDACTED]", variables["json_text"])
+        self.assertTrue(all(key in variables for key in (
+            "json_text", "policy_reasons", "fields_excluded", "redaction_counts",
+        )))
         self.assertNotIn("private-value", json_messages[0].model_dump_json())
         self.assertNotIn("alice@example.com", json_messages[0].model_dump_json())
+
+    def test_blocked_dify_tool_returns_no_context_variable(self):
+        from tools.compact_json import CompactJsonTool
+        from dify_plugin.entities.tool import ToolInvokeMessage
+
+        tool = CompactJsonTool.__new__(CompactJsonTool)
+        tool.response_type = ToolInvokeMessage
+        messages = list(tool._invoke({
+            "json_text": '{"lead":{"company":"Example Services"}}',
+            "allowed_paths": "lead.id",
+            "required_paths": "lead.id",
+        }))
+        variables = {
+            m.message.variable_name: m.message.variable_value
+            for m in messages if m.type.value == "variable"
+        }
+        self.assertEqual(variables["policy_status"], "block")
+        self.assertFalse(variables["may_auto_continue"])
+        self.assertEqual(variables["json_text"], "")
+        self.assertEqual(variables["missing_required_paths"], ["lead.id"])
+        self.assertTrue(all("Example Services" not in m.model_dump_json() for m in messages))
 
     def test_sdk_adapter_modules_import(self):
         for module in ("main", "provider.agent_safety_toolkit", "tools.redact_text", "tools.compact_json"):
