@@ -23,3 +23,5 @@ build/
 
 # Local Dify CLI
 .local/
+
+marketplace-submission/
