@@ -45,6 +45,18 @@ class PluginContractTests(unittest.TestCase):
                 self.assertTrue(cfg["output_schema"]["properties"])
                 self.assertTrue(all(p["form"] in {"form", "llm"} for p in cfg["parameters"]))
 
+    def test_dify_sdk_provider_schema_loads(self):
+        from dify_plugin.entities.tool import ToolProviderConfiguration
+
+        provider = ToolProviderConfiguration.model_validate(
+            read_yaml("provider/agent_safety_toolkit.yaml")
+        )
+        self.assertEqual(len(provider.tools), 2)
+        self.assertEqual(
+            [tool.identity.name for tool in provider.tools],
+            ["redact_text", "compact_json"],
+        )
+
     def test_sdk_adapter_modules_import(self):
         for module in ("main", "provider.agent_safety_toolkit", "tools.redact_text", "tools.compact_json"):
             with self.subTest(module=module):
