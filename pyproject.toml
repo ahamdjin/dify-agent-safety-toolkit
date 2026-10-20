@@ -1,0 +1,18 @@
+[project]
+name = "dify-agent-safety-toolkit"
+version = "0.0.1"
+description = "Bounded local redaction and JSON preparation tools for Dify agent workflows"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [{name = "Ahmad Yar"}]
+dependencies = [
+  "dify_plugin>=0.10.2,<1",
+  "ahmad-yar-gpt-tools==0.3.1",
+]
+
+[tool.setuptools]
+py-modules = ["agent_safety", "main"]
+
+[tool.setuptools.packages.find]
+include = ["provider*", "tools*"]
