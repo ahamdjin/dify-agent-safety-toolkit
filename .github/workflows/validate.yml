@@ -55,6 +55,32 @@ jobs:
           /tmp/dify-plugin plugin package . -o agent_safety_toolkit-0.0.1.difypkg
           test -s agent_safety_toolkit-0.0.1.difypkg
           sha256sum agent_safety_toolkit-0.0.1.difypkg
+      - name: Verify installer excludes development files and secrets
+        run: |
+          python - <<'PY'
+          import pathlib
+          import zipfile
+          archive = pathlib.Path("agent_safety_toolkit-0.0.1.difypkg")
+          with zipfile.ZipFile(archive) as package:
+              paths = [name.lstrip("./") for name in package.namelist()]
+          required = {
+              "manifest.yaml", "main.py", "agent_safety.py", "requirements.txt",
+              "PRIVACY.md", "_assets/icon.svg", "provider/agent_safety_toolkit.py",
+              "provider/agent_safety_toolkit.yaml", "tools/redact_text.yaml",
+              "tools/redact_text.py", "tools/compact_json.yaml", "tools/compact_json.py",
+          }
+          missing = required.difference(paths)
+          forbidden = [
+              name for name in paths
+              if name.startswith((".git/", ".github/", "tests/", ".venv/", "__pycache__/"))
+              or "/__pycache__/" in name
+              or name == ".env" or name.startswith(".env.")
+              or name.endswith(".pyc")
+          ]
+          if missing or forbidden:
+              raise SystemExit(f"Package missing files: {sorted(missing)}; unwanted paths: {sorted(forbidden)}")
+          print(f"Verified Dify package: {len(paths)} files, all required runtime paths present.")
+          PY
       - name: Upload installer artifact for Dify
         uses: actions/upload-artifact@v4
         with:
