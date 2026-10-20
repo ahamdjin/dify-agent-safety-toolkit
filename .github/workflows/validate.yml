@@ -74,7 +74,7 @@ jobs:
           missing = required.difference(paths)
           forbidden = [
               name for name in paths
-              if name.startswith((".git/", ".github/", "tests/", ".venv/", "__pycache__/"))
+              if name.startswith((".git/", ".github/", "tests/", "benchmarks/", ".venv/", "__pycache__/"))
               or "/__pycache__/" in name
               or name == ".env" or name.startswith(".env.")
               or name.endswith(".pyc")
