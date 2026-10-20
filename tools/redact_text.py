@@ -11,5 +11,8 @@ from agent_safety import redact_sensitive_text
 class RedactTextTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage, None, None]:
         yield self.create_json_message(
-            redact_sensitive_text(tool_parameters.get("text"))
+            redact_sensitive_text(
+                tool_parameters.get("text"),
+                mask_literals=tool_parameters.get("mask_literals"),
+            )
         )
