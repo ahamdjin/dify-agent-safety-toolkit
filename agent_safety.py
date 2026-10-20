@@ -98,8 +98,8 @@ def _read_key_names(raw: str | None) -> frozenset[str]:
     if raw is None or raw == "":
         return frozenset()
     if not isinstance(raw, str) or len(raw) > 4096:
-        raise ValueError("additional_secret_keys must be a short newline-separated string")
-    lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        raise ValueError("additional_secret_keys must be a short comma/newline-separated string")
+    lines = [line.strip() for line in re.split(r"[,\n]", raw) if line.strip()]
     if len(lines) > MAX_CUSTOM_KEYS or any(not FIELD_NAME.fullmatch(item) for item in lines):
         raise ValueError("additional_secret_keys must contain at most 32 simple field names")
     return frozenset(_normalized_name(item) for item in lines)
@@ -109,8 +109,8 @@ def _parse_paths(raw: str | None, field: str) -> tuple[tuple[str, ...], ...]:
     if raw is None or raw == "":
         return ()
     if not isinstance(raw, str) or len(raw) > 4096:
-        raise ValueError(f"{field} must be a short newline-separated string")
-    lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        raise ValueError(f"{field} must be a short comma/newline-separated string")
+    lines = [line.strip() for line in re.split(r"[,\n]", raw) if line.strip()]
     if len(lines) > MAX_PATHS:
         raise ValueError(f"{field} must contain no more than {MAX_PATHS} paths")
     output: list[tuple[str, ...]] = []
