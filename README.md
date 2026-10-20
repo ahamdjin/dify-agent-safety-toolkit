@@ -49,6 +49,10 @@ Null object *fields* are removed; null array elements remain. Secret fields with
 
 The plugin is **not published in the Dify Marketplace yet**. To install and test it yourself:
 
+**Easiest path, no CLI needed:** open [GitHub Actions → Validate Dify Agent Safety Toolkit](https://github.com/ahamdjin/dify-agent-safety-toolkit/actions/workflows/validate.yml), select the latest **successful** run, scroll to **Artifacts**, download **agent-safety-toolkit-dify-package**, unzip the downloaded artifact ZIP, and locate the file ending in `.difypkg`. In your Dify instance choose **Plugins → Install Plugin → Local Package**, then select that file. GitHub retains artifacts for 30 days; use a current run. No API keys are needed to run the two tools.
+
+**Or package it yourself with Dify's official CLI:**
+
 1. Install the official [Dify plugin CLI](https://docs.dify.ai/en/develop-plugin/getting-started/cli).
 2. Clone [this repository](https://github.com/ahamdjin/dify-agent-safety-toolkit) and open its root directory.
 3. Run `dify plugin package .` to create a `.difypkg` file.
