@@ -16,6 +16,7 @@ class PluginContractTests(unittest.TestCase):
     def test_manifest_metadata_and_permissions(self):
         manifest = read_yaml("manifest.yaml")
         self.assertEqual(manifest["type"], "plugin")
+        self.assertEqual(manifest["version"], "0.1.0")
         self.assertEqual(manifest["author"], "ahamdjin")
         self.assertEqual(manifest["name"], "agent_safety_toolkit")
         self.assertEqual(manifest["privacy"], "PRIVACY.md")
