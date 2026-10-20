@@ -63,6 +63,16 @@ class FieldProjectionTests(unittest.TestCase):
         self.assertEqual(result["json_text"], "")
         self.assertEqual(result["missing_required_paths"], ["lead.id"])
 
+    def test_comma_separated_field_config_suits_single_line_dify_forms(self):
+        result = run(
+            {"lead": {"id": 12, "company": "Example", "internalCredential": "fake"}},
+            allowed_paths="lead.id, lead.company, lead.internalCredential",
+            required_paths="lead.id, lead.company",
+            additional_secret_keys="internalCredential, privatePIN",
+        )
+        self.assertEqual(result["policy_status"], "review")
+        self.assertEqual(json.loads(result["json_text"])["lead"]["internalCredential"], "[REDACTED]")
+
     def test_required_missing_blocks_with_empty_payload(self):
         result = run(
             {"lead": {"name": "Customer"}},
