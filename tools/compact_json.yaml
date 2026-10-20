@@ -53,6 +53,52 @@ parameters:
     human_description:
       en_US: Truncate nested objects/arrays at this depth (1-16); default 8.
     llm_description: Maximum retained nesting.
+  - name: allowed_paths
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Allowed paths (one per line)
+    human_description:
+      en_US: Only forward these dot-separated JSON paths. Example lead.id or activities[].type. Leave blank to retain the full JSON and mark it for review.
+    llm_description: Newline-separated allowlist of JSON field paths. Arrays use [].
+  - name: required_paths
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Required paths (one per line)
+    human_description:
+      en_US: Block if these paths are missing, null, empty, masked, or lost to truncation. Must be covered by the allowlist when used.
+    llm_description: Paths that must survive preparation.
+  - name: additional_secret_keys
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Extra secret field names
+    human_description:
+      en_US: One JSON key name per line, such as internalCredential. Matching field values are masked at every depth.
+    llm_description: Extra sensitive JSON keys to mask in addition to built-in names.
+  - name: mask_literals
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Extra literal values to mask
+    human_description:
+      en_US: One exact literal per line, 4-128 characters. Case-sensitive replacements. Avoid storing real API keys here as Dify may log configuration.
+    llm_description: Specific literal strings to mask in selected JSON values.
+  - name: block_on_truncation
+    type: boolean
+    required: false
+    form: form
+    default: false
+    label:
+      en_US: Block if content is truncated
+    human_description:
+      en_US: Return no JSON payload if a string, list, or nested object is cut by compaction limits.
+    llm_description: Reject lossy results entirely when true.
 output_schema:
   type: object
   properties:
