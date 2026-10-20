@@ -69,7 +69,7 @@ parameters:
     label:
       en_US: Required paths (one per line)
     human_description:
-      en_US: Block if these paths are missing, null, empty, masked, or lost to truncation. Must be covered by the allowlist when used.
+      en_US: Comma/newline separated paths. Block if missing, null, empty, masked, or truncated. Must be covered by the allowlist.
     llm_description: Paths that must survive preparation.
   - name: additional_secret_keys
     type: string
