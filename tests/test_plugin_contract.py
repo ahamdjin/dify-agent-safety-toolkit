@@ -57,6 +57,25 @@ class PluginContractTests(unittest.TestCase):
             ["redact_text", "compact_json"],
         )
 
+    def test_real_sdk_messages_do_not_echo_redacted_values(self):
+        from tools.redact_text import RedactTextTool
+        from tools.compact_json import CompactJsonTool
+
+        raw = "Contact alice@example.com about the case"
+        text_tool = RedactTextTool.__new__(RedactTextTool)
+        text_messages = list(text_tool._invoke({"text": raw}))
+        self.assertEqual(len(text_messages), 1)
+        self.assertNotIn("alice@example.com", text_messages[0].model_dump_json())
+        self.assertIn("[EMAIL_1]", text_messages[0].model_dump_json())
+
+        json_tool = CompactJsonTool.__new__(CompactJsonTool)
+        json_messages = list(json_tool._invoke({
+            "json_text": '{"apiKey":"private-value","email":"alice@example.com"}',
+        }))
+        self.assertEqual(len(json_messages), 1)
+        self.assertNotIn("private-value", json_messages[0].model_dump_json())
+        self.assertNotIn("alice@example.com", json_messages[0].model_dump_json())
+
     def test_sdk_adapter_modules_import(self):
         for module in ("main", "provider.agent_safety_toolkit", "tools.redact_text", "tools.compact_json"):
             with self.subTest(module=module):
