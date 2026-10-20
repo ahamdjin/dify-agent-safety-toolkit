@@ -168,6 +168,21 @@ def _project(value: Any, tree: dict) -> Any:
     return projected
 
 
+def _has_real_selection(value: Any) -> bool:
+    """Do not treat empty wrapper objects like {"lead": {}} as useful context."""
+    if isinstance(value, dict):
+        return any(_has_real_selection(child) for child in value.values())
+    if isinstance(value, list):
+        return any(_has_real_selection(child) for child in value)
+    return value is not None and value != ""
+
+
+def _truncation_marker(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    return bool(re.search(r"…\[truncated \d+ chars\]$", value))
+
+
 def _count_fields(value: Any) -> int:
     if isinstance(value, dict):
         return len(value) + sum(_count_fields(child) for child in value.values())
@@ -178,7 +193,7 @@ def _count_fields(value: Any) -> int:
 
 def _has_required(value: Any, path: tuple[str, ...]) -> bool:
     if not path:
-        if value is None or value in ("", MASK, "[MAX_DEPTH_REACHED]"):
+        if value is None or value in ("", MASK, "[MAX_DEPTH_REACHED]") or _truncation_marker(value):
             return False
         if isinstance(value, (list, dict)) and not value:
             return False
@@ -192,7 +207,10 @@ def _has_required(value: Any, path: tuple[str, ...]) -> bool:
     if many:
         if not isinstance(child, list) or not child:
             return False
-        return all(_has_required(item, path[1:]) for item in child)
+        return all(
+            not (isinstance(item, dict) and "_truncated_items" in item)
+            and _has_required(item, path[1:]) for item in child
+        )
     return _has_required(child, path[1:])
 
 
@@ -321,7 +339,7 @@ def prepare_agent_json(
     reasons: list[str] = []
     if not allowed:
         reasons.append("no_allowlist_configured")
-    if allowed and not result:
+    if allowed and not _has_real_selection(result):
         reasons.append("no_selected_fields")
     if missing:
         reasons.append("required_fields_missing")
@@ -330,7 +348,10 @@ def prepare_agent_json(
     if redactions:
         reasons.append("patterns_masked")
 
-    blocked = bool(missing or (allowed and not result) or (strict_truncation and truncated))
+    blocked = bool(
+        missing or (allowed and not _has_real_selection(result))
+        or (strict_truncation and truncated)
+    )
     status = "block" if blocked else ("review" if reasons else "pass")
     output = "" if blocked else serialized
     return {
