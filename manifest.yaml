@@ -5,7 +5,7 @@ name: agent_safety_toolkit
 label:
   en_US: Agent Safety Toolkit
 description:
-  en_US: Prepare text and JSON for agent workflows using local pattern-based redaction and bounded response compaction.
+  en_US: Select, mask and size-limit agent input with required-field pass/review/block controls, without external runtime requests.
 icon: icon.svg
 created_at: "2026-10-20T00:00:00Z"
 privacy: PRIVACY.md
