@@ -5,7 +5,7 @@ identity:
     en_US: Prepare Agent JSON
 description:
   human:
-    en_US: Mask common secret fields and sensitive text values, remove nulls, and cap list/string/depth sizes in API JSON before an agent step. Output is lossy.
+    en_US: Forward only approved JSON fields, mask common or configured values, enforce required fields, and return a pass/review/block result before an AI step. Optional compaction is lossy.
   llm: Use to reduce large JSON tool responses before sending them to a model. Masks common secret and personal-data patterns, but this is not complete DLP. Preserve the original separately if needed.
 parameters:
   - name: json_text
