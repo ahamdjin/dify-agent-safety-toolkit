@@ -34,3 +34,31 @@ jobs:
         run: |
           python -m pip show ahmad-yar-gpt-tools dify_plugin
           python -c "from gpt_tools.pii_redactor import redact_text; from gpt_tools.tool_output_compactor import compact; print('Dependency imports: OK')"
+
+  package:
+    name: Package real Dify installer
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Download official Dify CLI v0.6.10 with pinned checksum
+        run: |
+          curl -fL --retry 3 --retry-delay 2 \
+            https://github.com/langgenius/dify-plugin-daemon/releases/download/0.6.10/dify-plugin-linux-amd64 \
+            -o /tmp/dify-plugin
+          echo '0cef74bcae375a4337c2ff7d42e4787717981a795e1c23cf56bb27ec07ec8304  /tmp/dify-plugin' | sha256sum -c -
+          chmod +x /tmp/dify-plugin
+      - name: Build installable package
+        run: |
+          /tmp/dify-plugin plugin package . -o agent_safety_toolkit-0.0.1.difypkg
+          test -s agent_safety_toolkit-0.0.1.difypkg
+          sha256sum agent_safety_toolkit-0.0.1.difypkg
+      - name: Upload installer artifact for Dify
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-safety-toolkit-dify-package
+          path: agent_safety_toolkit-0.0.1.difypkg
+          if-no-files-found: error
+          retention-days: 30
