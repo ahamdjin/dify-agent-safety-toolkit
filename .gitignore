@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+dist/
+build/
+*.difypkg
+
+# Dify local connection (never commit)
+.env
+.env.*
+!.env.example
+
+# Local tools
+.idea/
+.vscode/
+.DS_Store
