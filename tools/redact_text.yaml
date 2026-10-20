@@ -17,6 +17,15 @@ parameters:
     human_description:
       en_US: Text to process locally (max 120000 characters). It can contain sensitive information.
     llm_description: Text to mask before using it in the next agent or LLM step.
+  - name: mask_literals
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Extra literal values to mask
+    human_description:
+      en_US: Optional newline-separated exact values (4-128 characters), masked case-sensitively. Avoid putting real secrets into workflow settings.
+    llm_description: Exact additional literals to replace in the text.
 output_schema:
   type: object
   properties:
