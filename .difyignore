@@ -17,3 +17,12 @@ dist/
 build/
 *.difypkg
 .DS_Store
+
+.local/
+scripts/
+project-memory.md
+AGENTS.md
+CODEX.md
+
+.gitignore
+.difyignore

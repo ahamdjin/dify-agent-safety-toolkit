@@ -92,7 +92,7 @@ Metrics represent **JSON field and character counts**, *not LLM token savings or
 
 ## Installation
 
-**The plugin has not been published in the Dify Marketplace.** A successful automated build also does not prove installation in a live Dify Cloud/CE workspace.
+**The plugin has not been published in the Dify Marketplace.** Version 0.1.0 has been installed in Dify Cloud and both actions are visible. Workflow execution and Community Edition validation are not yet complete.
 
 1. Open [GitHub Actions — Validate Dify Agent Safety Toolkit](https://github.com/ahamdjin/dify-agent-safety-toolkit/actions/workflows/validate.yml).
 2. Select the latest **successful** build on `main`.
@@ -120,9 +120,9 @@ CI uses Dify's official CLI to package the `.difypkg`, checks its required runti
 
 ## Evidence, not marketing
 
-[`benchmarks/measure.py`](benchmarks/measure.py) and [the measured examples](docs/measurements.md) runs three **fictional, reproducible** workloads: CRM routing, support ticket triage, and webhook normalization. It verifies preserved required fields and records before/after JSON character size and excluded keys. This is compared against unfiltered JSON, **not against an optimized Dify Code node**; no accuracy, production latency, model-token, or dollar-savings claims are made.
+[`benchmarks/measure.py`](https://github.com/ahamdjin/dify-agent-safety-toolkit/blob/main/benchmarks/measure.py) and [the measured examples](https://github.com/ahamdjin/dify-agent-safety-toolkit/blob/main/docs/measurements.md) runs three **fictional, reproducible** workloads: CRM routing, support ticket triage, and webhook normalization. It verifies preserved required fields and records before/after JSON character size and excluded keys. This is compared against unfiltered JSON, **not against an optimized Dify Code node**; no accuracy, production latency, model-token, or dollar-savings claims are made.
 
-Our [automated tests](tests/) cover allowlist projection, required-field preservation, masking, blocked-result fail-closed behavior, array truncation, excessive depth, malformed JSON, invalid settings and Dify SDK output messages.
+Our [automated tests](https://github.com/ahamdjin/dify-agent-safety-toolkit/tree/main/tests) cover allowlist projection, required-field preservation, masking, blocked-result fail-closed behavior, array truncation, excessive depth, malformed JSON, invalid settings and Dify SDK output messages.
 
 ## Security and data handling
 

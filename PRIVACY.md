@@ -2,7 +2,7 @@
 
 **Maintainer:** [Ahmad Yar](https://www.ahmadyar.co/) · [Source repository](https://github.com/ahamdjin/dify-agent-safety-toolkit)
 
-**Updated:** 2026-10-20 · **Plugin version:** 0.0.1
+**Updated:** 2026-10-20 · **Plugin version:** 0.1.0
 
 ## What data the plugin sees
 
