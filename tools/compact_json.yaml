@@ -142,6 +142,12 @@ output_schema:
       description: Number of truncated values, removed nulls and masked fields.
   required:
     - json_text
+    - policy_status
+    - policy_reasons
+    - missing_required_paths
+    - may_auto_continue
+    - fields_excluded
+    - characters_removed
     - changed
     - input_characters
     - output_characters
